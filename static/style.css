@@ -1,0 +1,42 @@
+/* #3CB043
+ *  #D0F0C0
+ * https://www.color-meanings.com/shades-of-green-color-names-html-hex-rgb-codes
+ */
+
+body {
+	font-family: sans-serif;
+	background-color: #D0F0C0;
+	margin: 0;
+	padding: 0;
+}
+
+.title {
+	color: white;
+	padding-left: .5em;
+	padding-right: .5em;
+	padding-top: .5em;
+	padding-bottom: .5em;
+	font-size: 1.5em;
+	font-weight: bold;
+	background-color: #3CB043;
+	margin-bottom: 1em;
+	text-shadow: 2px 2px 5px black;
+	box-shadow: 0px 4px 4px gray;
+}
+
+form input {
+	margin-bottom: 4px;
+}
+
+
+/* login style */
+#login {
+	display: flex;
+	justify-content: center;
+}
+
+#login form {
+	text-align: right;
+}
+
+
