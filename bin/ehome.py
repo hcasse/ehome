@@ -3,6 +3,8 @@
 import os, os.path
 import time
 import cherrypy
+from mako.template import Template
+from mako.lookup import TemplateLookup
 
 ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 TMPL = os.path.join(ROOT, "share/ehome/templates")
@@ -16,6 +18,10 @@ _Builder3.build_Constant = build_Constant
 
 class EHome:
 	"""EHome server entry point."""
+
+	def __init__(self):
+		self.tmpl_lookup = TemplateLookup(directories = [TMPL])
+		self.timeout = 60 * 60
 
 	def config(self, conf):
 		try:
@@ -32,8 +38,9 @@ class EHome:
 			return dflt
 
 	@cherrypy.expose
-	def index(self):
-		return open(os.path.join(TMPL, 'index.html'))
+	def index(self, msg = ""):
+		return self.tmpl_lookup.get_template("index.html") \
+			.render(msg = msg)
 
 	@cherrypy.expose
 	def login(self, user, pwd):
@@ -47,15 +54,23 @@ class EHome:
 
 	@cherrypy.expose
 	def main(self):
-		return open(os.path.join(TMPL, 'main.html'))
+		self.check()
+		return self.tmpl_lookup.get_template("main.html").render()
+
+	def check(self):
+		try:
+			t = time.time()
+			if t > cherrypy.session['expiration'] + self.timeout:
+				del cherrypy.session['expiration']
+				self.index("Session expired!")
+		except KeyError:
+			self.index("Please, connect first.")
 
 
 # startup
 if __name__ == '__main__':
 
 	conf = {
-
-		# top level configuration
 		'/': {
 			'tools.sessions.on': True,
 			'tools.staticdir.root': os.path.abspath(ROOT)
@@ -64,7 +79,6 @@ if __name__ == '__main__':
 			'tools.staticdir.on': True,
 			'tools.staticdir.dir': 'share/ehome/static'
 		}
-
     }
     
 	cherrypy.config.update(conf)

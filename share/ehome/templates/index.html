@@ -1,57 +1,21 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>EHome Login</title>
-	<link href="/static/style.css" rel="stylesheet">
-	<script src="/static/ehome.js"></script>
-	<script lang="javascript">
+<%inherit file="base.html"/>
 
-
-		function doLogin() {
-			const user = getInput("user");
-			const pwd = getInput("pwd");
-			setInput("pwd", "");
-			askText(
-				`/login?user=${user}&pwd=${pwd}`,
-				function(res) {
-					setContent("login-message", res);
-					setFocus("pwd");
-					if(res.indexOf("success") >= 0)
-						setPage("main");
-				}
-			);
-		}
-
-		function onUserPress(e) {
-			const code = (e.keyCode ? e.keyCode : e.which);
-			if(code == 13)
-				setFocus("pwd");
-		}
-		
-	</script>
-</head>
-<body>
-	<div class="title">
-		EHome Manager
-	</div>
-
-	<div id="login">
-		<form method="get" action="login">
-			<input type="text" id="user"
-				autofocus="yes" required="yes"
-				placeholder="user name"
-				onKeyPress="onUserPress(event);"
-				/><br>
-			<input type="password" id="pwd" required="yes"
-				placeholder="password"
-				onchange="doLogin();"/><br>
-			<button type="button"
-				onclick="doLogin();">
-				Login
-			</button>
-			<p style="text-align: center;" id="login-message"></p>
-		</form>
-	</div>
-
-</body>
-</html>
+<div id="login">
+	<form method="get" action="login">
+		<input type="text" id="user"
+			autofocus="yes" required="yes"
+			placeholder="user name"
+			onKeyPress="onUserPress(event);"
+			/><br>
+		<input type="password" id="pwd" required="yes"
+			placeholder="password"
+			onchange="doLogin();"/><br>
+		<button type="button"
+			onclick="doLogin();">
+			Login
+		</button>
+		<p style="text-align: center;" id="login-message">
+			${msg}
+		</p>
+	</form>
+</div>
