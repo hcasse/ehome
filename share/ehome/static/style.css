@@ -39,4 +39,12 @@ form input {
 	text-align: right;
 }
 
+/* generic */
+.success {
+	font-weight: bold;
+}
+
+.failure {
+	color: red;
+}
 
