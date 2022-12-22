@@ -46,6 +46,8 @@ function setFocus(id) {
 }
 
 function setPage(name) {
-	window.location = window.location.origin + "/" + name;
+	const target = window.location.origin + "/" + name;
+	console.log("setPage(" + target + ")");
+	window.location = target;
 }
 

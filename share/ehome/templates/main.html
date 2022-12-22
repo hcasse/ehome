@@ -1,2 +1,24 @@
 <%inherit file="base.html"/>
 
+<%block name="title_menu">
+	<button onclick="logout();">Logout</button>
+	<button onclick="help();">Help</button>
+</%block>
+
+<div id="tab-container">
+<div id="tab-titles">
+	% for page in ehome.pages:
+		% if page == ehome.pages[0]:
+			<div class="tab-selected">
+				${page.label}
+			</div>
+		% else:
+			<div class="tab-unselected">
+				${page.label}
+			</div>
+		% endif
+	% endfor
+</div>
+<div id="tab-pages">
+</div>
+</div>

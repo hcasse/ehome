@@ -20,3 +20,9 @@ function onUserPress(e) {
 		setFocus("pwd");
 }
 		
+function logout() {
+	setPage("logout");	
+}
+
+function help() {
+}
