@@ -8,17 +8,31 @@
 <div id="tab-container">
 <div id="tab-titles">
 	% for page in ehome.pages:
-		% if page == ehome.pages[0]:
-			<div class="tab-selected">
-				${page.label}
-			</div>
-		% else:
-			<div class="tab-unselected">
-				${page.label}
-			</div>
-		% endif
+
+		<%
+			if page == ehome.pages[0]:
+				cls = "tab-selected"
+			else:
+				cls = "tab-unselected"
+		%>
+
+		<div class="${cls}"
+			id="page-${page.name}"
+			onclick="moveTo('${page.name}');">
+			${page.label}
+		</div>
+
 	% endfor
 </div>
 <div id="tab-pages">
 </div>
+
+<script>
+	% for page in ehome.pages:
+		update_time.set("${page.name}", ${page.get_update_time()});
+	% endfor
+	current_tab = "${ehome.pages[0].name}";
+	reloadTab();
+</script>
+
 </div>

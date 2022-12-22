@@ -1,4 +1,8 @@
 
+var current_tab;
+var update_time = new Map();
+var current_timeout = null;
+
 function doLogin() {
 	const user = getInput("user");
 	const pwd = getInput("pwd");
@@ -25,4 +29,26 @@ function logout() {
 }
 
 function help() {
+}
+
+function reloadTab() {
+	const tab = current_tab;
+	askText(`/content?tab=${tab}`, function(res) {
+		setContent("tab-pages", res);
+		t = update_time.get(tab);
+		if(t > 0)
+			current_timeout = setTimeout(reloadTab, t);
+	});	
+}
+
+function moveTo(ntab) {
+	setClass(`page-${current_tab}`, "tab-unselected");
+	current_tab = ntab;
+	if(current_timeout != null) {
+		clearTimeout(current_timeout);
+		current_timeout = null;
+	}
+	setClass(`page-${current_tab}`, "tab-selected");
+	setContent("tab-pages", "Loading...");
+	reloadTab();
 }

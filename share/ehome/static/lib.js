@@ -1,3 +1,10 @@
+
+/* Element management */
+
+function getElement(id) {
+	return document.getElementById(elt);
+}
+
 function getAttr(elt) {
 	e = document.getElementById(elt);
 	return e.getAttribute(att);
@@ -18,6 +25,26 @@ function setContent(elt, val) {
 	e.innerHTML = val;
 }
 
+function setFocus(id) {
+	e = document.getElementById(id);
+	e.focus();
+}
+
+function setClass(id, cls) {
+	document.getElementById(id).className = cls;	
+}
+
+
+/* Page manegement */
+
+function setPage(name) {
+	const target = window.location.origin + "/" + name;
+	console.log("setPage(" + target + ")");
+	window.location = target;
+}
+
+
+/* Connection management */
 function askServer(cmd, fun) {
 	const req = new XMLHttpRequest();
 	req.onreadystatechange = function() {
@@ -38,16 +65,5 @@ function askText(cmd, fun) {
 	askServer(cmd, function(req) {
 		fun(req.responseText);
 	});
-}
-
-function setFocus(id) {
-	e = document.getElementById(id);
-	e.focus();
-}
-
-function setPage(name) {
-	const target = window.location.origin + "/" + name;
-	console.log("setPage(" + target + ")");
-	window.location = target;
 }
 

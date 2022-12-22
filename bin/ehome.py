@@ -1,13 +1,18 @@
 #!/usr/bin/python3
 
-import os, os.path
-import time
 import cherrypy
 from mako.template import Template
 from mako.lookup import TemplateLookup
+import os, os.path
+import re
+import time
 
 ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 TMPL = os.path.join(ROOT, "share/ehome/templates")
+
+# regular expressions
+CPUINFO_RE = re.compile("^processor\s*:\s*([0-9]+)")
+STAT_RE = re.compile("^cpu([0-9]+)\s+(.*)")
 
 # awful fix
 from cherrypy.lib.reprconf import _Builder3
@@ -27,6 +32,14 @@ TOP_CONF = {
     }
 
 
+class Core:
+
+	def __init__(self, num):
+		self.num = num
+		self.load = 0
+		self.stats = [0] * 8
+		self.old_stats = None
+
 class Page:
 	"""Page composing the provided services."""
 
@@ -40,13 +53,12 @@ class Page:
 		pass
 
 	def get_template(self, id):
+		"""Get Mako templote for the given identifier."""
 		return self.parent.get_template(id)
 
 	def gen(self):
+		"""Generate the display for this page."""
 		return None
-
-	def check(self):
-		return self.parent.check()
 
 	def get_conf(self, id, dflt = None):
 		try:
@@ -54,15 +66,46 @@ class Page:
 		except KeyError:
 			return dflt
 
+	def expired(self):
+		return self.parent.expired()
+
+	def expire(self):
+		return self.parent.expire()
+
+	def get_update_time(self):
+		"""Get the update time in ms."""
+		return 0
+
 
 class Dashboard(Page):
 	"""Main dashboard."""
 
 	def __init__(self):
 		Page.__init__(self, "dashboard", "Dashboard")
+		self.cores = []
+		for l in open("/proc/cpuinfo"):
+			r = CPUINFO_RE.match(l)
+			if r != None:
+				self.cores.append(Core(int(r.group(1))))
+		self.get_stats()
+
+	def get_stats(self):
+		for l in open("/proc/stat"):
+			r = STAT_RE.match(l)
+			if r != None:
+				core = self.cores[int(r.group(1))]
+				core.old_stats = core.stats
+				core.stats = [int(x) for x in r.group(2).split()]
+				total = sum(core.stats) - sum(core.old_stats)
+				idle = core.stats[3] - core.old_stats[3]
+				core.load = 100. * (total - idle) / total
 
 	def gen(self):
-		return "dashboard"
+		self.get_stats()
+		return self.get_template("dashboard.html").render(cores = self.cores)
+
+	def get_update_time(self):
+		return 1000
 
 
 class LDAP(Page):
@@ -73,16 +116,6 @@ class LDAP(Page):
 
 	def gen(self):
 		return "LDAP"
-
-
-def check_expire(f):
-	def check(self):
-		res = self.check()
-		if res == None:
-			return f(self)
-		else:
-			return res
-	return check
 
 
 class EHome:
@@ -134,6 +167,24 @@ class EHome:
 		cherrypy.engine.start()
 		cherrypy.engine.block()
 
+	def expired(self):
+		try:
+			ct = time.time()
+			et = cherrypy.session['expiration'] + self.timeout
+			if ct > et:
+				self.msg = "Session expired!"
+				return True
+			else:
+				return False
+		except KeyError:
+			self.msg = "Please, log first."
+			return True
+
+	def expire(self):
+		return self.index(self.msg)
+
+	def get_template(self, id):
+		return self.tmpl_lookup.get_template(id)
 
 	@cherrypy.expose
 	def index(self, msg = ""):
@@ -157,26 +208,26 @@ class EHome:
 			return "<div class='failure'>Authentification error!</div>"
 
 	@cherrypy.expose
-	@check_expire
-	def main(self):
-		return self.tmpl_lookup.get_template("main.html").render(ehome = self)
-
-	@cherrypy.expose
 	def logout(self):
 		if 'expiration' in cherrypy.session:
 			del cherrypy.session['expiration']
 		return self.index()
 
-	def check(self):
-		try:
-			ct = time.time()
-			et = cherrypy.session['expiration'] + self.timeout
-			if ct > et:
-				return self.index("Session expired!")
-			else:
-				return None
-		except KeyError:
-			return self.index("Please, log first.")
+	@cherrypy.expose
+	def main(self):
+		if self.expired():
+			return self.expire()
+		return self.tmpl_lookup.get_template("main.html").render(ehome = self)
+
+	@cherrypy.expose
+	def content(self, tab):
+		if self.expired():
+			return self.expire()
+		for page in self.pages:
+			if page.name == tab:
+				return page.gen()
+		cherrypy.log("Bad accessed page: %s" % tab)
+		return "Error."
 
 
 # startup
