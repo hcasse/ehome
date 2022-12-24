@@ -1,18 +1,25 @@
 #!/usr/bin/python3
 
+# system imports
 import cherrypy
 from mako.template import Template
 from mako.lookup import TemplateLookup
 import os, os.path
-import re
+import sys
 import time
 
+# compute paths
 ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 TMPL = os.path.join(ROOT, "share/ehome/templates")
 
-# regular expressions
-CPUINFO_RE = re.compile("^processor\s*:\s*([0-9]+)")
-STAT_RE = re.compile("^cpu([0-9]+)\s+(.*)")
+
+# ehome imports
+sys.path.append(ROOT)
+import ehomelib
+import ehomelib.dashboard as dashboard
+import ehomelib.ldap as ldap
+import ehomelib.services as services
+
 
 # awful fix
 from cherrypy.lib.reprconf import _Builder3
@@ -30,92 +37,6 @@ TOP_CONF = {
 			'tools.staticdir.dir': 'share/ehome/static'
 		}
     }
-
-
-class Core:
-
-	def __init__(self, num):
-		self.num = num
-		self.load = 0
-		self.stats = [0] * 8
-		self.old_stats = None
-
-class Page:
-	"""Page composing the provided services."""
-
-	def __init__(self, name, label):
-		self.name = name
-		self.label = label
-		self.parent = None
-		self.conf = None
-
-	def configure(self, map):
-		pass
-
-	def get_template(self, id):
-		"""Get Mako templote for the given identifier."""
-		return self.parent.get_template(id)
-
-	def gen(self):
-		"""Generate the display for this page."""
-		return None
-
-	def get_conf(self, id, dflt = None):
-		try:
-			return self.conf[id]
-		except KeyError:
-			return dflt
-
-	def expired(self):
-		return self.parent.expired()
-
-	def expire(self):
-		return self.parent.expire()
-
-	def get_update_time(self):
-		"""Get the update time in ms."""
-		return 0
-
-
-class Dashboard(Page):
-	"""Main dashboard."""
-
-	def __init__(self):
-		Page.__init__(self, "dashboard", "Dashboard")
-		self.cores = []
-		for l in open("/proc/cpuinfo"):
-			r = CPUINFO_RE.match(l)
-			if r != None:
-				self.cores.append(Core(int(r.group(1))))
-		self.get_stats()
-
-	def get_stats(self):
-		for l in open("/proc/stat"):
-			r = STAT_RE.match(l)
-			if r != None:
-				core = self.cores[int(r.group(1))]
-				core.old_stats = core.stats
-				core.stats = [int(x) for x in r.group(2).split()]
-				total = sum(core.stats) - sum(core.old_stats)
-				idle = core.stats[3] - core.old_stats[3]
-				core.load = 100. * (total - idle) / total
-
-	def gen(self):
-		self.get_stats()
-		return self.get_template("dashboard.html").render(cores = self.cores)
-
-	def get_update_time(self):
-		return 1000
-
-
-class LDAP(Page):
-	"""User management using LDAP."""
-
-	def __init__(self):
-		Page.__init__(self, "ldap", "Users")
-
-	def gen(self):
-		return "LDAP"
 
 
 class EHome:
@@ -233,7 +154,7 @@ class EHome:
 # startup
 if __name__ == '__main__':
 	EHome([
-		Dashboard(),
-		LDAP()
+		dashboard.Page(),
+		services.Page(),
+		ldap.Page()
 	]).run()
-
