@@ -1,0 +1,120 @@
+/* #3CB043
+ *  #D0F0C0
+ * https://www.color-meanings.com/shades-of-green-color-names-html-hex-rgb-codes
+ */
+
+body {
+	font-family: sans-serif;
+	background-color: #D0F0C0;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	width: 100vw;
+	height: 100vh;
+}
+
+
+/* title */
+.title {
+	position: fixed;
+	color: white;
+	background-color: #3CB043;
+	box-shadow: 0px 4px 4px gray;
+	z-index: 100;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.title-text {
+	padding-left: .5em;
+	padding-right: .5em;
+	padding-top: .5em;
+	padding-bottom: .5em;
+	font-size: 1.5em;
+	font-weight: bold;
+	text-shadow: 2px 2px 5px black;	
+}
+
+.title-menu {
+	float: right;
+	margin: 1em;
+}
+
+
+/* tab container */
+#tab-container {
+	display: flex;
+	flex-flow: row wrap;
+	padding-top: 3.5em;
+	height: 100%;
+}
+
+#tab-titles {
+	flex: 0 0 auto;
+	padding-left: .5em;
+	padding-top: .5em;
+	padding-bottom: .5em;
+	padding-right: 0;
+	background-color: #CCCCCC;
+	display: flex;
+	flex-flow: column;
+	height: 100%;
+}
+
+#tab-pages {
+	flex: 1 1 auto;
+	box-shadow: -4px 0 4px gray;
+	z-index: 25;
+	padding: 1em;
+}
+
+.tab-selected {
+	background-color: #D0F0C0;
+	border-left: 1px solid black;
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+	margin-bottom: 6px;
+	padding: 6px;
+	z-index: 50;
+	box-shadow: 0px 2px gray;
+	border-radius: 8px 0 0 8px;
+}
+
+.tab-unselected {
+	border: 1px solid black;
+	margin-bottom: 6px;
+	padding: 6px;
+	border-radius: 8px 0 0 8px;
+	background-color: #DDDDDD;
+	color: gray;
+	cursor: pointer;
+}
+
+.tab-unselected:hover {
+	color: black;
+}
+
+
+/* login style */
+#login {
+	display: flex;
+	justify-content: center;
+}
+
+#login form {
+	text-align: right;
+}
+
+/* generic */
+.success {
+	font-weight: bold;
+}
+
+.failure {
+	color: red;
+}
+
+form input {
+	margin-bottom: 4px;
+}
+

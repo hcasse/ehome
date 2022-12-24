@@ -1,0 +1,31 @@
+<%
+	import time;
+	colors = [
+		"black",	# 10%
+		"black",	# 20%
+		"green",	# 30%
+		"green",	# 40%
+		"gold",		# 50%
+		"gold",		# 60%
+		"orange",	# 70%
+		"orange",	# 80%
+		"red",		# 90%
+		"red",		# 100%
+		"red"		# over
+	]
+%>
+
+<table class="dashboard-cores">
+	<tr>
+		<th>Core</th>
+		<th>Load</th>
+	</tr>
+	% for core in cores:
+		<tr>
+			<td>${core.num}</td>
+			<td><font color="${colors[int(core.load/10)]}">
+				${"%3.2f" % core.load}%
+			</font></td>
+		</tr>
+	% endfor
+</table>
