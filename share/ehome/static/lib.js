@@ -34,6 +34,22 @@ function setClass(id, cls) {
 	document.getElementById(id).className = cls;	
 }
 
+function disableElement(id) {
+	document.getElementById(id).disabled = true;
+}
+
+function enableElement(id) {
+	document.getElementById(id).disabled = false;
+}
+
+function isEnabled(id) {
+	return !document.getElementById(id).disabled;
+}
+
+function isDisabled(id) {
+	return document.getElementById(id).disabled;
+}
+
 
 /* Page manegement */
 

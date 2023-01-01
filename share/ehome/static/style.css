@@ -3,6 +3,7 @@
  * https://www.color-meanings.com/shades-of-green-color-names-html-hex-rgb-codes
  */
 
+/* main mapping */
 body {
 	font-family: sans-serif;
 	background-color: #D0F0C0;
@@ -11,6 +12,10 @@ body {
 	overflow: hidden;
 	width: 100vw;
 	height: 100vh;
+}
+
+.content {
+	padding-top: 5em;
 }
 
 
@@ -104,6 +109,17 @@ body {
 #login form {
 	text-align: right;
 }
+
+
+/* configuration form */
+.form-table tr td {
+	text-align: right;
+}
+
+.form-table tr td + td {
+	text-align: left;
+}
+
 
 /* generic */
 .success {

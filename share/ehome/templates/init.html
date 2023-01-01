@@ -1,0 +1,89 @@
+<%inherit file="base.html"/>
+
+<script>
+	function form_failed(msg) {
+		setContent("form-message", msg);
+		disableElement("submit");
+	}
+
+	function form_suceed() {
+		setContent("form-message", "");
+		enableElement("submit");		
+	}
+
+	function form_notready() {
+		setContent("form-message", "");
+		disableElement("submit");	
+	}
+
+	function check() {
+		const password = getInput("password");
+		const retype = getInput("retype");
+		if(retype != "" && password != "" && password != retype) {
+			form_failed("Passwords are differents!");
+			return;
+		}
+		const admin = getInput("admin");
+		const domain = getInput("domain");
+		if(admin == ""
+		|| password == ""
+		|| retype == ""
+		|| domain == "")
+			form_notready();
+		else
+			form_suceed();
+	}
+
+	function form_submit() {
+		if(isDisabled("submit"))
+			e.preventDefault();
+	}
+</script>
+
+<div class="content" style="padding-top: 5em;"id="login">
+
+<div>
+<p>Welcome to <b>EHome V${ehome.version}</b>!</p>
+
+<p>Notice that, before initializing your EHome server, you have to determine your domain name.</p>
+
+<form method="GET" action="init" style="text-align:center;" onsubmit="form_submit();">
+	<table class="form-table">
+		<tr>
+			<td><label for="admin">Administrator name</label></td>
+			<td><input type="text" value="${ehome.admin}" id="admin" name="admin" onchange="check();"/></td>
+		</tr>
+		<tr>
+			<td><label for="password">Administrator password</label></td>
+			<td><input type="password" id="password" name="password" placeholder="mandatory" onchange="check();"/></td>
+		</tr>
+		<tr>
+			<td><label for="retype">Retype password</label></td>
+			<td><input type="password" id="retype" name="retype" placeholder="mandatory" onchange="check();"/></td>
+		</tr>
+		<tr>
+			<td><label for="domain">Domain name</label></td>
+			<td><input type="text" value="${ehome.domain}" id="domain" name="domain" placeholder="mandatory"  onchange="check();"/></td>
+		</tr>
+		<tr>
+			<td><label for="port">Port</label></td>
+			<td><input type="number" value="${ehome.port}" id="port" name="port" min="8001" max="65535"/></td>
+		</tr>
+		
+		% for module in ehome.modules:
+
+			${module.gen_init()}
+
+		% endfor
+
+	</table>
+
+	<button type="submit" id="submit" disabled>Submit</button>
+
+	<p id="form-message"></p>
+
+</form>
+
+<div>
+
+</div>

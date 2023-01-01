@@ -1,4 +1,5 @@
 import random
+	
 
 class Page:
 	"""Page composing the provided services."""
@@ -36,6 +37,9 @@ class Page:
 		"""Get the update time in ms."""
 		return 0
 
+	def get_root(self):
+		return self.parent.get_root()
+
 
 # password generation
 
@@ -72,3 +76,6 @@ def make_password(length, *css):
 
 def test():
 	return make_password(10, DIGITS, SYMBOLS, HIGHCASE, LOWCASE, ALL)
+
+
+

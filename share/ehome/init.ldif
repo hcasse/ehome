@@ -1,0 +1,7 @@
+dn: ou=people,dc=freeboxos,dc=fr
+objectClass: organizationalUnit
+ou: people
+
+dn: ou=groups,dc=freeboxos,dc=fr
+objectClass: organizationalUnit
+ou: groups

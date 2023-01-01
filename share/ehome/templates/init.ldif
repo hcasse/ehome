@@ -1,0 +1,8 @@
+dn: ou=People,dc=${dcdomain}
+objectClass: organizationalUnit
+ou: People
+
+dn: ou=Group,dc=${dcdomain}
+objectClass: organizationalUnit
+ou: Group
+

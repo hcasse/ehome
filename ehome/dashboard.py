@@ -1,7 +1,7 @@
 """Module implementing dashboard page."""
 
 import re
-import ehomelib
+import ehome
 
 CPUINFO_RE = re.compile("^processor\s*:\s*([0-9]+)")
 STAT_RE = re.compile("^cpu([0-9]+)\s+(.*)")
@@ -15,11 +15,11 @@ class Core:
 		self.old_stats = None
 
 
-class Page(ehomelib.Page):
+class Page(ehome.Page):
 	"""Main dashboard."""
 
 	def __init__(self):
-		ehomelib.Page.__init__(self, "dashboard", "Dashboard")
+		ehome.Page.__init__(self, "dashboard", "Dashboard")
 		self.cores = []
 		for l in open("/proc/cpuinfo"):
 			r = CPUINFO_RE.match(l)
@@ -44,3 +44,24 @@ class Page(ehomelib.Page):
 
 	def get_update_time(self):
 		return 1000
+
+
+def init(server):
+	pass
+
+def config(map):
+	pass
+
+def get_pages():
+	return [Page()]
+
+def gen_init():
+	return ""
+
+def do_init(map):
+	pass
+
+def gen_config():
+	return ""
+
+
